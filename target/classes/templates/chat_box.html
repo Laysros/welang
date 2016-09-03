@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta id="_csrf" name="_csrf" th:content="${_csrf.token}" />
+<meta id="_csrf_header" name="_csrf_header"
+	th:content="${_csrf.headerName}" />
+<meta id="current_id" name="current_id"
+	th:content="${currentUser.id}" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Welang</title>
+
+<link rel="stylesheet" href="css/css/bootstrap.min.css" />
+<script src="css/jquery-1.11.2.min.js"></script>
+<script src="css/js/bootstrap.min.js"></script>
+<script src="css/message.js"></script>
+<script src="css/sockjs-0.3.4.min.js"></script>
+<script src="css/stomp.min.js"></script>
+
+<script src="css/suggestion.js"></script>
+<link rel="stylesheet" type="text/css" href="css/suggestion.css" />
+<link rel="stylesheet" type="text/css" href="css/chat_box.css" />
+<link rel="stylesheet" type="text/css" href="css/search.css" />
+
+
+
+<script src="css/chat_box.js"></script>
+
+
+<!--Date Picker -->
+<link rel="stylesheet" type="text/css" href="css/datepicker/css/datepicker.css" />
+<script src="css/datepicker/js/bootstrap-datepicker.js"></script>
+  
+  
+
+</head>
+<body>
+	<div id="chat_panel">
+		<div class="chat-sidebar">
+		
+			<div class="sidebar-name" th:each="user, i:${friends}">
+				<a
+					th:href="'javascript:register_popup(\'' +${currentUser.id} + '\',\'' +   ${user.id} + '\', \'' + ${user.username} + '\');'">
+					<img width="30" height="30" th:src="${'/images/' + user.userSettings.profileImage}" /> <span><label
+						th:text="${user.username}" th:id="${'chat-box-list-' + user.id}"></label></span>
+						<label th:id="${'non-read-message' + user.id}" th:text="${messageCount[i.index]}" th:class="${messageCount[i.index] == 0?'non-read-message':'non-read-message-red'}">0</label>
+				</a>
+				
+			</div>
+		</div>
+	</div>
+	<div class="head_controll">
+	<!--  
+	<div class="container">-->
+	<div class="row">
+		<div class="col-md-5">		
+            <div class="input-group" id="adv-search">
+                <input type="text" id="search-bar"  class="form-control" placeholder="Search for phrase" />
+                <div class="input-group-btn">
+                    <div class="btn-group" role="group">
+                        <div class="dropdown dropdown-lg">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button>
+                            <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                <form class="form-horizontal" role="form">
+                                  <div class="form-group">
+                                    <label for="filter">Language</label>
+                                    <select id="input-language" class="form-control">
+                                        <!-- <option th:each="language:${currentUser.userSettings.foreignLanguages}" 
+									          	th:text="${language.language}">Part name</option> -->
+									       <option>Cambodian</option>
+									       <option>French</option>
+									       <option>English</option>
+                                    </select>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="contain">Tag</label>
+                                    <input id="input-tag" class="form-control" type="text" />
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="contain">Contains the words</label>
+                                    <input id="input-keyword"  class="form-control" type="text" />
+                                  </div>
+                                  <button onclick="searchByLanguageTagAndKeyword()" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                                </form>
+                            </div>
+                        </div>
+                        <button onclick="searchByKeyword()" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                        <button type="button" id="btn_next" class="btn btn-default" value="1"
+		onclick="showMoreSentences(this, 'aa')">Next</button>
+						
+		
+		
+                    </div>
+                    
+                </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+          <label id="currentLanguage" th:text="${currentUser.userSettings.foreignLanguages[0].language}"></label>
+          </div>
+          
+          <!-- DIAL CONTROLS -->
+          <div id="dial-control-bar" class="col-md-6">		
+						<div class="row">
+							<div class="col-sm-6 col-xs-7">
+								<div class="form-group">
+						            <div class="input-group">
+						                <div class="input-group-btn search-panel">
+						                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						                        <span id="search_concept">Filter by</span> <span class="caret"></span>
+						                    </button>
+						                    <ul class="dropdown-menu" role="menu">
+						                      <li><a href="#contains">Contains</a></li>
+						                      <li><a href="#its_equal">Culture , Living</a></li>
+  											  <li><a href="#greather_than">Hobbies , Sport</a></li>
+											  <li><a href="#less_than">City , Business</a></li>
+						                      <li class="divider"></li>
+						                      <li><a href="#all">Anything</a></li>
+						                    </ul>
+						                </div>
+						                <input type="hidden" id="input-dialogue-tag" name="search_param" value="all"/>         
+						                <input type="text" id="input-dialogue-keyword" class="form-control" name="x" placeholder="Search dialogue"/>
+						                <span class="input-group-btn">
+						                    <button id="search-dialogue" class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+						                </span>
+						            </div>
+								 </div>
+							</div>
+							<div class="col-sm-6 col-xs-5 dial-buttons">
+								<button id="snap" class="btn btn-success">
+									<span class="glyphicon glyphicon-camera"></span>
+								</button>
+								<button id="hangup" class="btn btn-danger">
+									<span class="glyphicon glyphicon-ban-circle"></span>
+								</button>
+								<button id="btn-home" class="btn btn-normal">
+									<span class="glyphicon glyphicon glyphicon-home"></span>
+								</button>
+								<div id="my-number" th:utext="${currentUser.id}">
+								</div>
+								
+							</div>
+						</div>
+						</div>
+						<!--End DIAL  -->
+						<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+			<!-- MY PHONE NUMBER -->
+			<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+			
+        </div>
+   <!--     
+	</div>
+	
+	  -->
+		
+	</div>	
+	<div id="chat_suggestion_panel">
+	</div>
+	
+	<!--  -->
+
+	<!--  -->
+	<div class="row">
+        <div id="information-panel" class="col-md-2">
+            <div id="card">
+            <div class="profile-header-container">   
+				<div class="profile-header-img">
+			        <img class="img-circle" th:src="${'/images/' + currentUser.userSettings.profileImage}" />
+			        <!-- badge -->
+			        <ul class="">
+					  <li class="dropdown">
+					    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="label label-default rank-label glyphicon glyphicon-chevron-down" th:utext="${currentUser.username}"></span></a>
+						    <ul class="dropdown-menu">
+						      <li>
+						        <a  id="find-friend" href="#">Find Friend<span id="under-dropdown" class="glyphicon  glyphicon glyphicon-plus pull-right"></span></a>
+						      </li>
+						      <li class="divider"></li>
+						      <li>
+						        <a id="update-info" href="#">Settings <span id="under-dropdown" class="glyphicon glyphicon-cog pull-right"></span></a>
+						      </li>
+						      <li>
+						        <a href="/logout">Logout<span id="under-dropdown" class="glyphicon glyphicon-log-out pull-right"></span></a>
+						      </li>
+						    </ul>
+						  </li>
+						</ul>
+				  </div>
+			</div>
+				<div class="city-selected">
+					<article>
+						<div class="info">
+							<div class="temp">
+								<a onclick="showRequestFriends()" href="#"  th:utext="${friendNotification}" id="num-request"></a>
+							</div>
+							<div class="wind">
+							</div>
+						</div>
+						<div class="icon"></div>
+					</article>
+					<figure
+						style="background-image: url(http://136.243.1.253/~creolitic/bootsnipp/home.jpg)"></figure>
+				</div>
+				<div class="days">
+					<div class="row row-no-gutter">
+						<div class="col-md-6">
+							<div class="day">
+								<h1 th:text="${#lists.size(currentUser.friends)}"></h1>
+								<button  id="list-friends" class="btn btn-primary">Friends</button>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="day">
+								<h1 th:text="${messageCountTotal}" >Message</h1>
+								<button  id="list-chat-history" class="btn btn-primary">Message</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+        </div>
+        
+		<div class="col-md-7">
+			<label id="dialogue-content-a"></label>
+				<button id="btn-next-content" class="btn btn-primay" value="1" onclick="getNextDialogue(this)">
+							<span class="glyphicon glyphicon glyphicon-ok"></span>
+				</button>
+						<!-- DISPLAY -->
+						
+				<div class="aligncenter" style="width:110%;height:0;border-top:2px solid #FF7500;font-size:0;">-</div> 
+				<div id="middle-main" class="row">
+					<div class="col-xs-12 text-center">
+						<div id="video-border">
+							<div class="pubnub-relative">
+								<div id="video-self"></div>
+							</div>
+							<div id="video-display">
+							</div>
+						</div>
+						<div id="pubnub-relative">
+							<div id="video-thumbnail"></div>
+							<div id="pubnub-logo">
+								<div id="pubnub-logo-img"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+					
+		</div>
+		<!--  -->
+	
+	</div>
+	
+	<!--  -->
+	
+	<!--  -->
+	 <input type="hidden" id="friendId" value=""/>
+	 <input type="hidden" id="dialogue-content-id" value=""/>
+	 <input type="hidden" id="friend-id-call" value=""/>
+	
+	
+	
+	<script th:inline="javascript">
+		function showMoreSentences(input, tag) {
+			var token = $('#_csrf').attr('content');
+			var header = $('#_csrf_header').attr('content');
+			var pageNum = input.value;
+			var language = document.getElementById("currentLanguage").innerHTML;
+			var keyword = document.getElementById("search-bar").value;
+			var search = {
+				"language" : language,
+				"page" : pageNum,
+				"keyword" : keyword
+			}
+		
+			$.ajax({
+				type : "POST",
+				url : "/showMoreSentences?_csrf=" + token,
+				data : search, // Note it is important
+				success : function(result) {
+					input.value= parseInt(input.value) + 1;
+					var obj = jQuery.parseJSON(result);
+					var panel = $("#chat_suggestion_panel");
+					panel.html("");
+					var nav = $("<nav></nav>");
+					var u = $("<ul></ul>");
+					var ani = 1;
+					$.each(obj, function(key, value) {
+						var li = $("<li></li>");
+						var label = $("<label></label>").addClass(
+								"element-animation" + ((ani % 3) + 1)
+										+ " btn btn-lg btn-primary btn-block");
+						label.text(value.phrase);
+						var sp = $("<span></span>").addClass("btn-label");
+						$("<i></i>").addClass(
+								"glyphicon glyphicon-chevron-right").appendTo(
+								sp);
+						sp.appendTo(label);
+						label.appendTo(li);
+						li.appendTo(u);
+						ani += 1;
+					});
+					u.appendTo(nav);
+					nav.appendTo(panel);
+				}
+			});
+		}
+		//Add Friend
+		function addFriend(btn){
+	        var toId = jQuery(btn).data("value");
+	        var token = $('#_csrf').attr('content');
+			var header = $('#_csrf_header').attr('content');
+			var fromId = $('#current_id').attr('content');
+			var info = {
+				"addFrom" : fromId,
+				"addTo" : toId
+			}
+		
+			$.ajax({
+				type : "POST",
+				url : "/addFriend?_csrf=" + token,
+				data : info,
+				success : function(result) {
+					$('#add-' +  toId).addClass('disabled');
+					$('#add-' +  toId).html('Added');
+				}
+			});
+	    }
+		
+		
+		function setSendTo(btn){
+			var toId = jQuery(btn).data("value");
+			jQuery("#btn-send-message-anonymous").data("value", toId);
+			var toId = jQuery(btn).data("value");
+		}
+		function sendMessageAnonymous(btn){
+			var toId = jQuery(btn).data("value");
+			var message = $("#comment").val();
+			var token = $('#_csrf').attr('content');
+			var sender = $('#current_id').attr('content');
+			var search = {
+				"fromWhom" : sender,
+				"toWhom" : toId,
+				"message" : message
+			}
+			$.ajax({
+				type : "POST",
+				url : "/sendMessage?_csrf=" + token,
+				data : search, // Note it is important
+				success : function(result) {
+					$('#message-modal').modal('hide');
+					$("#comment").val("");
+				}
+			});
+		}
+		
+	
+		
+	    $("#update-info").click(function() {
+	    	 var element = loadUpdate('updateProfile');
+	    	 var container = document.getElementById("middle-main");
+				container.innerHTML = element;
+				$('#togglepass').hide();
+				 $("#btntoggle").click(function() {
+						$('#togglepass').show();
+					});
+				 $("#btnsave").click(function() {
+				var pass = $("#txtpass").val();
+				var oldpass = $("#txtoldpass").val();
+				var newpassword = $("#txtnewpass").val();
+				var confirmPassword = $("#txtcnpass").val();
+				if (pass == oldpass) {
+					if (newpassword == confirmPassword) {
+						$('#togglepass').hide();
+					} else
+						alert('password does not match');
+				} else {
+					if(oldpass="")
+						alert('Enter old Password');
+					else
+						alert('You have entered wrong password');
+				}
+				
+				});
+				 $("#add-new-language").click(function() {
+					 $(".div-new-language").css('display', 'block');
+					 $("#selection-new-language").removeAttr('disabled');
+				 });
+				 $('#pickyDate').datepicker({
+					    format: "dd-mm-yyyy"
+				});
+				$(".remove-language").click(function() {
+					 $('#language-' + this.id).hide();
+					 $('#language-level-' + this.id).val("-1");
+					 $(this).hide();
+				});
+
+				 $("#changePassword").click(function() {
+					 	$("#changePassword").attr('disabled','disabled');
+					 	$("#result-changing").html("Verifying the passwords, please wait!!!");
+					 	$("#result-changing").css('color', 'blue');
+						var oldPass = $("#oldpass").val();
+						var confirmPass = $("#confirmpass").val();
+						var token = $('#_csrf').attr('content');
+						var param = {
+							"oldPass" : oldPass,
+							"confirmPass":confirmPass
+						};
+						$.ajax({
+							type : "POST",
+							url : "/changePassword?_csrf=" + token,
+							data : param, // Note it is important
+							success : function(result) {
+								if(result == "OK"){
+									$("#result-changing").html("Password has been changed successfully.");
+						        	$("#result-changing").css('color', 'green');
+								}else{
+									$("#result-changing").html("Changing is failed. Please check your old password");
+						        	$("#result-changing").css('color', 'red');
+						        	$("#changePassword").removeAttr('disabled');
+								}
+								$("#oldpass").val("");
+								$("#newpass").val("");
+								$("#confirmpass").val("");
+							}
+						});
+				});
+				 /*<![CDATA[*/
+				 $("#newpass").keyup(function() {
+						var password = $(this).val();
+				        if(password.length < 8){
+				        	$("#confirmMessage").html("Passwords is too short.");
+				        	$("#confirmMessage").css('color', 'red');
+				        }else{
+				        	$("#confirmMessage").html("Passwords is long enough :D");
+				        	$("#confirmMessage").css('color', 'green');
+				        }
+				        $("#changePassword").attr('disabled','disabled');
+				 });
+				 $("#confirmpass").keyup(function() {
+				        var password = $("#newpass").val();
+				        if(password.length >= 8){
+				        	if(password == $(this).val()){
+					        	$("#confirmMessage").html("Passwords match.");
+					        	$("#confirmMessage").css('color', 'green');
+					        	$("#changePassword").removeAttr('disabled');
+					        }else{
+					        	$("#confirmMessage").html("Passwords do not match!");
+					        	$("#confirmMessage").css('color', 'red');
+					        	$("#changePassword").attr('disabled','disabled');
+					        }	
+				        }
+				   });
+				 /*]]>*/
+				 
+	    });
+	    
+	    $('#messagesH').scroll(function(){
+	        if ($('#messagesH').scrollTop() == 0){
+	        	
+	        }
+	    });
+	    $("#list-chat-history").click(function() {
+			var currentUid = $('#current_id').attr('content');
+			var element = loadPage('/chat_history',currentUid);
+			var container = document.getElementById("middle-main");
+						container.innerHTML = element;
+		});
+		$("#btn-home").click(function() {
+			var currentUid = $('#current_id').attr('content');
+			var element = loadUpdate('/call_template');
+			var container = document.getElementById("middle-main");
+						container.innerHTML = element;
+						
+		});
+	    $("#list-friends").click(function() {
+			var currentUid = $('#current_id').attr('content');
+			var element = loadPage('/list_friends',currentUid);
+			var container = document.getElementById("middle-main");
+						container.innerHTML = element;
+		});
+	    
+		$("#search-bar").keyup(function(e) {
+			if (e.keyCode == 13) {
+				searchByKeyword();
+			}
+		});
+		
+		
+		
+		$("#find-friend").click(function() {
+			var currentUid = $('#current_id').attr('content');
+			var element = loadPage('/findfriend',currentUid);
+	    	 var container = document.getElementById("middle-main");
+	    	 container.innerHTML = loadUpdate('/find_friend_header'); 
+				container.innerHTML += element;
+				
+			$('input[type="checkbox"]').click(function(){
+		        if($(this).attr("value")=="native"){
+		        	if ($(this).is(":checked")) {
+		        		$("#search-language-native").removeAttr('disabled');
+		        	}else{
+		        		$("#search-language-native").attr('disabled','disabled');
+		        	}
+		        }
+		        if($(this).attr("value")=="learning"){
+		        	if ($(this).is(":checked")) {
+		        		$("#search-language-learning").removeAttr('disabled');
+		        	}else{
+		        		$("#search-language-learning").attr('disabled','disabled');
+		        	}
+		        }
+		    });
+	    });
+		$("#input-language").change(function() {
+			var e = document.getElementById("input-language");
+			var language = e.options[e.selectedIndex].text;
+			$("#currentLanguage").text(language);
+		});
+		
+		
+		function showRequestFriends() {
+			var token = $('#_csrf').attr('content');
+			var currentUid = $('#current_id').attr('content');
+			var search = {
+				"userId" : currentUid
+			};
+			$.ajax({
+				type : "POST",
+				url : "/getFriendRequests?_csrf=" + token,
+				data : search,
+				success : function(result) {
+					var container = document.getElementById("middle-main");
+					container.innerHTML = "";	
+					if(result == "NO"){
+						$("<h3></h3>").text('No friend request').appendTo(container);
+					}else{
+						var obj = jQuery.parseJSON(result);
+						var div1 = $("<div></div>").addClass("items col-xs-12 col-sm-4 col-md-3 col-lg-12 clearfix");
+						$.each(obj, function(key, user) {
+							var div2 = $("<div></div>").addClass("info-block block-info clearfix");
+							var div3 = $("<img></img>").addClass("pull-left img-circle-add-friend").attr("src",'/images/' + user.userSettings.profileImage);;
+							var sp = $("<span></span>").addClass("glyphicon glyphicon-user glyphicon-lg");
+							sp.appendTo(div3);
+							div3.appendTo(div2);
+							$("<b></b>").text('Native : ').appendTo(div2);
+							$("<span></span>").text(user.userSettings.nativeLanguage).appendTo(div2);
+							$("<br/>").appendTo(div2);
+							$("<b></b>").text('Learning : ').appendTo(div2);
+								/*<![CDATA[*/
+								for(i=0;i<user.userSettings.foreignLanguages.length;i++) {
+									if(user.userSettings.foreignLanguages[i].level != -1){
+										$("<span></span>").text(user.userSettings.foreignLanguages[i].language + ", ").appendTo(div2);
+									}
+						        }		
+								 /*]]>*/
+							
+							$("<br/>").appendTo(div2);							
+							if(user.userSettings.description == null){
+								$("<b></b>").text('description : ').appendTo(div2);
+								$("<span></span>").text("description : none").appendTo(div2);	
+							}else{
+								$("<b></b>").text('description :').appendTo(div2);
+								$("<span></span>").text(user.userSettings.description).appendTo(div2);
+							}							
+							$("<button></button>").text("Confirm")
+							/* .attr("id", "confirmFriendship") */
+							/* .click(confirmFriendship) */
+							.attr("onclick",'return confirmFriendship(this,\''+currentUid+'\',\''+user.id+'\')')
+							.addClass("btn btn-primary pull-right").appendTo(div2);
+							$("<h4></h4>").text(user.username).appendTo(div1);
+							div2.appendTo(div1);
+							
+						});
+						div1.appendTo(container);	
+					}
+					
+				}
+			});
+		}
+		
+		
+		function confirmFriendship(btn, ownerId, friendId) {
+			var token = $('#_csrf').attr('content');
+			var currentUid = $('#current_id').attr('content');
+			var param = {
+				"ownerId" : ownerId,
+				"friendId" : friendId
+			};
+			$.ajax({
+				type : "POST",
+				url : "/confirmFriendship?_csrf=" + token,
+				data : param, // Note it is important
+				success : function(result) {
+					btn.innerHTML = "Friend";
+					btn.disabled = true;
+					  var num = $("#num-request").text();
+					  num = parseInt(num);
+					  num-=1;
+					  $("#num-request").text(num);
+				}
+			});
+		}
+		function searchByKeyword() {
+			var next = document.getElementById("btn_next");
+			next.value = 1;
+			
+			var e = document.getElementById("input-language");
+			var language = e.options[e.selectedIndex].text;
+			var keyword = document.getElementById("search-bar").value;
+			var token = $('#_csrf').attr('content');
+			var header = $('#_csrf_header').attr('content');
+			var search = {
+				"language" : language,
+				"keyword" : keyword
+			}
+			$.ajax({
+				type : "POST",
+				url : "/searchByKeyword?_csrf=" + token,
+				data : search, // Note it is important
+				success : function(result) {
+					var obj = jQuery.parseJSON(result);
+					var panel = $("#chat_suggestion_panel");
+					panel.html("");
+					var nav = $("<nav></nav>");
+					var u = $("<ul></ul>");
+					var ani = 1;
+					$.each(obj, function(key, value) {
+						var li = $("<li></li>");
+						var label = $("<label></label>").addClass(
+								"element-animation" + ((ani % 3) + 1)
+										+ " btn btn-lg btn-primary btn-block");
+						label.text(value.phrase);
+						var sp = $("<span></span>").addClass("btn-label");
+						$("<i></i>").addClass("glyphicon glyphicon-chevron-right").appendTo(sp);
+						sp.appendTo(label);
+						label.appendTo(li);
+						li.appendTo(u);
+						ani += 1;
+					});
+					u.appendTo(nav);
+					nav.appendTo(panel);
+				}
+			});
+
+		}
+
+		function callToId(id) {
+			/* var script = document.createElement('script');
+			script.setAttribute('type', 'text/javascript');
+			script.setAttribute('src', 'css/call.js');
+			document.head.appendChild(script); */
+			dial(id);
+		}
+		function searchByLanguageTagAndKeyword() {
+			var language = document.getElementById("currentLanguage").innerHTML;
+			var tag = document.getElementById("input-tag").value;
+			var keyword = document.getElementById("input-keyword").value;
+			var token = $('#_csrf').attr('content');
+			var header = $('#_csrf_header').attr('content');
+
+			var search = {
+				"language" : language,
+				"tag" : tag,
+				"keyword" : keyword,
+			}
+			$.ajax({
+				type : "POST",
+				url : "/searchByLanguageTagAndKeyword?_csrf=" + token,
+				data : search, // Note it is important
+				success : function(result) {
+					var obj = jQuery.parseJSON(result);
+					var panel = $("#chat_suggestion_panel");
+					panel.html("");
+					var nav = $("<nav></nav>");
+					var u = $("<ul></ul>");
+					var ani = 1;
+					$.each(obj, function(key, value) {
+						var li = $("<li></li>");
+						var label = $("<label></label>").addClass(
+								"element-animation" + ((ani % 3) + 1)
+										+ " btn btn-lg btn-primary btn-block");
+						label.text(value.phrase);
+						var sp = $("<span></span>").addClass("btn-label");
+						$("<i></i>").addClass("glyphicon glyphicon-chevron-right").appendTo(
+								sp);
+						sp.appendTo(label);
+						label.appendTo(li);
+						li.appendTo(u);
+						ani += 1;
+					});
+					u.appendTo(nav);
+					nav.appendTo(panel);
+				}
+			});
+		}
+		function sendMessageFromHistory(evt, input){
+			var currentUid = $('#current_id').attr('content');
+			var friendId = document.getElementById("friendId").value;
+			sendMessage(evt, input, currentUid, friendId);
+		}
+		function commandSetSeenMessage(fromWhom){
+			var currentUid = $('#current_id').attr('content');
+			setSeenMessage(currentUid, fromWhom);
+		}
+		
+		
+		
+		function showChatHistory(friendId, nPage){
+			document.getElementById("friendId").value = friendId;
+			//var nPage = document.getElementById("chat-page-number").value;
+			var token = $('#_csrf').attr('content');
+			var header = $('#_csrf_header').attr('content');
+			var param = {
+				"friendId" : friendId,
+				"nPage" : nPage
+			};
+			$.ajax({
+				type : "POST",
+				url : "/chat_history_content?_csrf=" + token,
+				data : param, // Note it is important
+				success : function(result) {
+					var currentUid = $('#current_id').attr('content'); 
+					var obj = jQuery.parseJSON(result);
+					if(nPage==0){
+						$('.messagesH').html('');	
+					}
+					
+					$.each(obj, function(key, value) {
+						var d = (new Date(value.sentDate)).toString().split(' ').splice(1,3).join(' ');
+						if(nPage==0){
+							setMessage(d, value.message, value.fromId==currentUid?'right':'left', false);
+						}else{
+							setMessage(d, value.message, value.fromId==currentUid?'right':'left', true);
+						}
+						 
+					});
+				}
+			});
+			var $sc = $('.messagesH');
+			$sc.on('scroll', function() {
+				if ($sc.scrollTop() == 0){
+					showChatHistory(friendId, ++nPage);
+				}
+				
+			});
+		}
+		
+		function sendMessage(evt, input, sender, sendTo) {
+			var delay = (function() {
+				var timer = 0;
+				return function(callback, ms) {
+					clearTimeout(timer);
+					timer = setTimeout(callback, ms);
+				};
+			})();
+			var message = input.value;
+			if (evt.keyCode == 13) {
+				if (message.length == 0) {
+					delay(function() {
+						input.value = '';
+					}, 5);
+					return;
+
+				} else if (!evt.shiftKey) {
+					delay(function() {
+						var token = $('#_csrf').attr('content');
+						var header = $('#_csrf_header').attr('content');
+						var search = {
+							"fromWhom" : sender,
+							"toWhom" : sendTo,
+							"message" : message
+						}
+						$.ajax({
+							type : "POST",
+							url : "/sendMessage?_csrf=" + token,
+							data : search, // Note it is important
+							success : function(result) {
+								input.value = "";
+								var d = getCurrentTime();
+								setMessage(d, message,"right", false);
+								setMessageInBox(message, sendTo);
+							}
+						});
+					}, 100);
+
+				}
+			}
+		}
+		function addZero(i) {
+		    if(i.length == 1) {
+		        i = "0" + i;
+		    }
+		    return i;
+		}
+
+		function getCurrentTime() {
+		    var d = new Date();
+		    var h = addZero(d.getHours());
+		    var m = addZero(d.getMinutes());
+		    return h + ":" + m;
+		}
+		
+		function setMessage(date, text, messageSide, isMore){
+			var $message;
+            $message = $($('.message_template').clone().html());
+            $message.addClass(messageSide).find('.text').html(text);
+            $message.find('.sent-date').html(date);
+            if(isMore){
+            	$('.messagesH').prepend($message);
+            	console.log($message);
+            }else{
+            	$('.messagesH').append($message);
+            	 var $messages = $('.messagesH');
+                 $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 30);
+            }            
+            setTimeout(function () {
+                return $message.addClass('appeared');
+            }, 100);
+           
+		}
+		
+		function setMessageInBox(message, sendTo){
+			var response = document
+			.getElementById('message_list_'
+					+ sendTo);
+			var li = document.createElement('li');
+			var sp = document.createElement('span');
+			sp.className = 'right';
+			sp.innerHTML = message;
+			li.appendChild(sp);
+		
+			response.appendChild(li);
+			var scroll = document.getElementById('messages'
+					+ sendTo);
+			scroll.scrollTop = scroll.scrollHeight;
+			scroll.animate({
+				scrollTop : scroll.scrollHeight
+			});
+		}
+		function search(btn) {		
+			
+			var token = $('#_csrf').attr('content');
+			var header = $('#_csrf_header').attr('content');
+			var txt= document.getElementById("txtname").value;
+			var nativeLanguage="NONE", learningLanguage="NONE";
+			if(txt==""){
+				return;
+			}
+			document.getElementById("loader").style.display = "block";
+			var radio_val;
+			if (document.getElementById('input-learning').checked) {				
+				var e = document.getElementById("search-language-learning");
+				learningLanguage = e.options[e.selectedIndex].text;
+			}
+			if(document.getElementById('input-native').checked){
+				var e = document.getElementById("search-language-native");
+				nativeLanguage = e.options[e.selectedIndex].text;
+			}
+			
+			var formData = new FormData();
+			formData.append("name", txt);
+			formData.append("nativeLanguage", nativeLanguage);
+			formData.append("learningLanguage", learningLanguage);
+			
+			
+			var xmlhttp = new XMLHttpRequest();
+			xmlhttp.open("POST", "/search?_csrf=" + token);
+			xmlhttp.send(formData);
+			var container = document.getElementById("result-search");
+			
+			var delay = (function() {
+				var timer = 0;
+				return function(callback, ms) {
+					clearTimeout(timer);
+					timer = setTimeout(callback, ms);
+				};
+			})();
+			delay(function() {
+				container.innerHTML = xmlhttp.responseText;
+				 $("#loader").css("display", "none");
+			}, 1000);
+		}
+		$('.search-panel .dropdown-menu').find('a').click(function(e) {
+			e.preventDefault();
+			var param = $(this).attr("href").replace("#","");
+			var concept = $(this).text();
+			$('.search-panel span#search_concept').text(concept);
+			$('.input-group #search_param').val(param);
+		});
+		$("#search-dialogue").click(function() {
+	    	 var tag = $('.search-panel span#search_concept').text();
+			 var keyword = document.getElementById("input-dialogue-keyword").value;
+			 var language = document.getElementById("currentLanguage").innerHTML;
+			var token = $('#_csrf').attr('content');
+			var search = {
+				"language" : language,
+				"tag" : tag,
+				"keyword" : keyword,
+			}
+			$.ajax({
+				type : "GET",
+				url : "/searchDialogueByTag?_csrf=" + token,
+				data : search,
+				success : function(result) {
+					var obj = jQuery.parseJSON(result);
+					var panel = $("#chat_suggestion_panel");
+					panel.html("");
+					var nav = $("<nav></nav>");
+					var u = $("<ul></ul>");
+					var ani = 1;
+					$.each(obj, function(key, value) {
+						var li = $("<li></li>");
+						var label = $("<label></label>").addClass(
+								"element-animation" + ((ani % 3) + 1)
+										+ " btn btn-lg btn-primary btn-block")
+										.attr('onClick', 'showDialogue(this,' + value[0]+')');
+						label.text(value[1]);
+						var sp = $("<span></span>").addClass("btn-label");
+						$("<i></i>").addClass("glyphicon glyphicon-chevron-right").appendTo(sp);
+						sp.appendTo(label);
+						label.appendTo(li);
+						li.appendTo(u);
+						ani += 1;
+					});
+					u.appendTo(nav);
+					nav.appendTo(panel);
+				}
+			});
+	    });
+		function showDialogue(input, id){
+			document.getElementById("btn-next-content").value = 1;			
+			setDialogue(id, 0)
+			
+		}
+		function setDialogue(id, index){
+			document.getElementById("dialogue-content-id").value = id;
+			var token = $('#_csrf').attr('content');
+			var friendId = document.getElementById("friend-id-call").value;
+			var search = {
+					"id" : id,
+					"index" : index,
+					"talkWith" : friendId
+				}
+				$.ajax({
+					type : "GET",
+					url : "/getContentA?_csrf=" + token,
+					data : search,
+					success : function(result) {
+						$('#dialogue-content-a').text(result);
+					}
+				});
+		}
+		function getNextDialogue(input){
+			var index = input.value;
+			var id = document.getElementById("dialogue-content-id").value
+			setDialogue(id, index);
+			input.value++;
+		}
+		
+	</script>
+	<!--WEBrCT-->
+		<script src="css/pubnub-dev.js"></script>
+		<script src="css/webrtc.js"></script>
+		<script src="css/sound.js"></script>
+		<script src="css/call.js"></script>
+	<!--  -->
+</body>
+</html>

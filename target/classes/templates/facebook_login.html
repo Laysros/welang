@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<head>
+	<meta charset="utf-8"></meta>
+	<title>Sign In</title>
+
+	<!-- Google Fonts -->
+	<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700|Lato:400,100,300,700,900' rel='stylesheet' type='text/css'></link>
+	<link rel="stylesheet" type="text/css" th:href="@{css/style.css}" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body class="log" id="body_login">
+	<form th:action="@{/login}" method="post" id="dataForm">
+		<input type="hidden" class="style-4" name="username" th:value="${username}" />
+		<input type="hidden" class="style-4" name="password" th:value="${password}" />	
+</form>
+<script type="text/javascript">
+    document.getElementById('dataForm').submit(); // SUBMIT FORM
+</script>
+</body>
+</html>

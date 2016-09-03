@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta id="_csrf" name="_csrf" th:content="${_csrf.token}" />
+<meta id="_csrf_header" name="_csrf_header"
+	th:content="${_csrf.headerName}" />
+<title>Update Profile</title>
+<link rel="stylesheet" type="text/css" href="css/datepicker/css/datepicker.css" />
+<script src="css/datepicker/js/bootstrap-datepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="css/app.css" />
+
+</head>
+
+<body>
+	<div class="well">
+    <h2>Edit Profile</h2>
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#home" data-toggle="tab">Profile</a></li>
+      <li><a href="#profile" data-toggle="tab">Password</a></li>
+    </ul>
+    <div id="myTabContent" class="tab-content">
+      <div class="tab-pane active in" id="home">
+      	<form id="upload-file-form" method="post" th:Object="${user}" th:action="@{updateProfile}" enctype="multipart/form-data">
+      		<table class="form-sample">
+			<tr>
+				<td><input type="file" id="file" name="file" /></td>
+			</tr>
+			<tr>
+				<td><label>Change Username</label></td>
+				<td><input type="text" th:field="*{username}"
+					th:value="${user.username}" id="txtusrname" required="required" /></td>
+			</tr>
+			<tr>
+				<td><label>Email</label></td>
+				<td><input type="text" th:field="*{email}"
+					th:value="${user.email}" id="txtemail" readonly="readonly"/></td>
+			</tr>
+			<tr>
+				<td><label>Date Of Birth:</label></td>
+	        	<td>
+	        		<div class="hero-unit">
+	            		<input  type="text" name="date" th:value="${user.userSettings.dateOfBirth}?${#dates.format(user.userSettings.dateOfBirth, 'dd-MM-yyyy')}:''" placeholder="dd-mm-yyyy"  id="pickyDate"/>
+	        		</div>
+	        	</td>
+			</tr>
+			<tr>
+				<td><label>Gender:</label></td>
+	        	<td><select th:field="*{gender}">
+			  			<option value="Male">Male</option>
+						<option value="Female">Female</option>
+					</select>
+				</td>
+	        </tr>
+			<tr>
+				<td><label>Native Language:</label></td>
+	        	<td><select th:field="*{userSettings.nativeLanguage}">
+			  			  <option th:each="language : ${languages}"
+              					th:value="${language}" th:text="${language}">English</option>
+					</select>
+				</td>
+	        </tr>
+	        <tr>
+				<td><hr/></td>
+	        	<td><hr/></td>
+	        </tr>		
+			<tr>
+				<td><label>Learning:</label></td>
+	        	<td>
+	        		<div class="hero-unit">
+	            		<div th:each="lang,status:${user.userSettings.foreignLanguages}"  class="form-group">
+		            		<select th:field="*{userSettings.foreignLanguages[__${status.index}__].language}" th:id="${'language-' + status.index}">
+					  			 <option th:each="language : ${languagesProfile}"
+              					th:value="${language}" th:text="${language}">English</option>
+							</select>
+							<span class="glyphicon glyphicon-remove remove-language" th:id="${status.index}"></span>
+			                <input  type="hidden" th:field="*{userSettings.foreignLanguages[__${status.index}__].id}"/>
+			                <input  type="hidden" th:field="*{userSettings.foreignLanguages[__${status.index}__].level}" th:id="${'language-level-' + status.index}" />
+           				 </div>
+           				 <button type="button" id="add-new-language" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span></button>
+           				 <div class="form-group div-new-language">
+		            		<select id="selection-new-language" th:name="|userSettings.foreignLanguages[${#lists.size(user.userSettings.foreignLanguages)}].language|" disabled="disabled">
+					  			 <option th:each="language : ${languages}"
+              					th:value="${language}" th:text="${language}">English</option>
+							</select>
+           				 </div>
+           				 
+	        		</div>
+	        	</td>
+			</tr>	
+			<tr>
+				<td><label>Description:</label></td>
+				<td><textarea th:field="*{userSettings.description}" th:value="${user.userSettings.description}" id="txtdesc"></textarea></td>
+			</tr>
+			</table>
+          	<div>
+        	    <input id="btn-update-profile" type="submit" class="btn btn-primary" value="Update"/>
+        	</div>
+        </form>
+      </div>
+      <div class="tab-pane fade" id="profile">
+      		<h4 id="result-changing"></h4>
+        	<label>Old Password</label>
+        	<input type="password" class="input-xlarge" id="oldpass"/>
+            <label>New Password</label>
+            <input type="password" class="input-xlarge" id ="newpass"/>
+            <label>Confirm Password</label>
+            <input type="password" class="input-xlarge" id="confirmpass"/>
+             <span id="confirmMessage" class="confirmMessage">Please enter your password</span>
+        	<div>
+                <button class="btn btn-primary" id="changePassword" disabled="disabled">Change password</button>
+        	</div>
+      </div>
+  </div>
+  </div>
+</body>
+</html>

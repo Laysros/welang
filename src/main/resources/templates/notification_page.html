@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head>
+    	<meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+		<meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
+        <title>Hello World!</title>
+        <script src="css/jquery-1.11.2.min.js"></script>
+	    <script src="css/sockjs-0.3.4.min.js"></script>
+	    <script src="css/stomp.min.js"></script>
+    </head>
+    <body>
+         <p>
+      Click the button below to perform an action.
+      <br />
+      <strong>UserA</strong> will be notified via web socket.
+    </p>
+    <input id="do-some-action" type="button" value="Click me" />
+
+    <!-- Javascript functions -->
+    <script>
+
+      /**
+       * Send an action to the server.
+       */
+      function sendAction(event) {
+        event.preventDefault();
+        var token = $('#_csrf').attr('content');
+		var header = $('#_csrf_header').attr('content');
+        $.ajax({
+          url: "/some-action?_csrf=" + token,
+          type: "POST"
+        });
+        return;
+      } // function sendAction
+      
+      /**
+       * Init operations.
+       */
+      $(document).ready(function() {
+        
+        // Bind the on-click event for the button element.
+        $("#do-some-action").on("click", sendAction);
+        
+      });
+
+    </script>
+    </body>
+</html>

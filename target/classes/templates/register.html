@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head>
+<link rel="stylesheet" type="text/css" th:href="@{css/app.css}" />
+<style>
+.table
+{
+	height:100%;
+	width:100%;
+	align:center;
+}
+td
+{
+		height: 40px;
+    vertical-align: bottom;
+	
+}
+.center-block {
+	max-width: 500px;
+	display:block;
+    margin-right: auto;
+    margin-left: auto;
+}
+</style>
+        
+    </head >
+    <body class="security-app">
+    <h2 ><i>Sign Up and start learning languages...</i></h2> 
+    
+       <form method="post" th:action="@{register}" th:object="${userAccount}">
+              <div class="container1"><h2>Sign Up..</h2></div>
+              <div class="center-block">
+        			<div th:if="${param.error}" class="alert-danger"><font color="red">Email is already register.</font></div>
+        	 </div>
+       <div class="container">
+        <div class="table-responsive">
+		<table class="table">
+				<tr>
+					<td>First Name</td>
+					<td><input type="text" th:field="*{firstName}" required="required" /></td>
+					<td><label class="control-label" th:errors="*{firstName}"></label></td>
+			   </tr>
+			
+				<tr>
+				
+				<td>Last Name</td>
+				<td><input type="text" th:field="*{lastName}" required="required"/></td>
+				<td><label class="control-label" th:errors="*{lastName}"></label></td>
+			</tr>
+		
+			<tr>
+				<td>Email</td>
+				<td><input type="email" th:field="*{email}" required="required"/></td>
+				<td><label class="control-label" th:errors="*{email}"></label></td>
+			</tr>
+			<tr>
+							
+				<td>Password</td>
+				<td><input type="password" th:field="*{password}" required="required"/></td>
+				<td><label class="control-label" th:errors="*{password}"></label></td>
+			</tr>
+		<tr>
+			<td>Native Language</td>
+			<td>
+	  			<select th:field="*{userSettings.nativeLanguage}">
+		  			<option th:each="language : ${languages}"
+              					th:value="${language}" th:text="${language}">My option</option>
+				</select>
+			</td> 
+				
+	    </tr>		
+		<tr>
+				<td>Foreign Languages</td>
+				<td>
+				<select th:field="*{userSettings.foreignLanguages[0].language}">
+					<option th:each="language : ${languages}"
+              					th:value="${language}" th:text="${language}">My option</option>
+				</select>
+				</td>
+		 </tr> 
+			<tr>		
+		  </tr>		
+		<tr>
+				<td>Gender</td>
+				<td><input type="radio" checked="checked"  name="rdgender" id="gmale" th:value="Male" th:field="*{gender}"/>Male
+				<input type="radio" name="rdgender" id="gfemale" th:value="Female" th:field="*{gender}"/>Female</td>
+		 </tr> 
+		<tr>	
+		<td><a href="login" role="button">Go to login</a></td>
+		<td><input id="btn-update-profile" type="submit" value="Register"/></td>
+		
+		</tr>
+		<tr></tr>
+		</table>
+</div>		
+		</div>
+	</form>
+    </body>
+</html>

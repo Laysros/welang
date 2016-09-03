@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+		<div class="col-md-5">
+			<div class="addon">
+		          <p>Chat history</p>
+		          	<li th:each="user:${friends}">
+		           	 	<a th:href="'javascript:showChatHistory(\'' +  ${user.id} + '\',\'0\');'">
+			              <img class="round" th:src="${'/images/' + user.userSettings.profileImage}"/>
+			              <label th:text="${user.username}"></label>
+		                </a>
+		              </li>
+		              <div th:if="${ #lists.isEmpty(friends)}">
+					 	<h3>Empty List</h3>
+					</div>
+		              
+	        </div>
+	    </div>
+        <div class="col-md-7">
+			<div class="chat_window" th:if="${not #lists.isEmpty(friends)}">
+				<div class="top_menu">
+					<div class="title">History</div>
+				</div>				
+				<ul class="messagesH">
+				</ul>
+				<div class="bottom_wrapper clearfix">
+					<div class="message_input_wrapper">
+						<!-- <input type="hidden" value="0" id="chat-page-number"/> -->
+						<textarea onkeypress="return sendMessageFromHistory(event, this)" class="message_input" placeholder="Type your message here..."></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="message_template">
+				<li class="message"><div class="avatar"></div>
+					<div class="text_wrapper">
+						<div class="text"></div>
+						<div class="sent-date"></div>
+					</div></li>
+			</div>
+	</div>
+	
+</html>
+

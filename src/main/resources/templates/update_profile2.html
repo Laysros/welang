@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta id="_csrf" name="_csrf" th:content="${_csrf.token}" />
+<meta id="_csrf_header" name="_csrf_header"
+	th:content="${_csrf.headerName}" />
+<title>Spring Security Example</title>
+<script src="css/jquery-1.11.2.min.js"></script>
+
+<script type="text/javascript">
+	function enabletext(id) {
+		if (id == "btneditusrnm") {
+			document.getElementById("txtusrname").disabled = false;
+		}
+		else if (id == "btneditemail") {
+			document.getElementById("txtemail").disabled = false;
+		} else if (id == "btneditdob") {
+			document.getElementById("txtdob").disabled = false;
+		} else if (id == "btneditdesc") {
+			document.getElementById("txtdesc").disabled = false;
+		}
+
+	}
+	
+</script>
+
+<link rel="stylesheet" type="text/css" th:href="@{css/app.css}" />
+</head>
+
+<body>
+	<h3>Personal info</h3>
+	
+	<form id="upload-file-form" method="post" th:Object="${user}"
+		th:action="@{updateProfile}" enctype="multipart/form-data">
+	<!-- 	<img th:src="@{'images/'+${user.id}+'.png'}" height="50" width="50"/> -->
+		<table>
+			<tr>
+				<td><input type="file" id="file" name="file" /></td>
+			</tr>
+			<tr>
+				<td><label>Change Username</label></td>
+				<td><input type="text" th:field="*{username}"
+					th:value="${user.username}" id="txtusrname" /></td>
+			</tr>
+			<tr>
+				<td><label>Change Email</label></td>
+				<td><input type="text" th:field="*{email}"
+					th:value="${user.email}" id="txtemail" /></td>
+			</tr>
+			<tr>
+				<td>Date Of Birth:</td>
+				<td><input type="text" th:value="${user.userSettings.dateOfBirth}" disabled="disabled"/></td>
+			</tr>
+			<tr>
+				<td><label>Change DOB</label></td>
+				<td><input type="text" id="txtdate" name="date" placeholder="dd-mm-yyyy"/>  </td>
+			</tr>
+			<tr>
+				<td><label>Description:</label></td>
+				<td><textarea th:field="*{userSettings.description}" th:value="${user.userSettings.description}" id="txtdesc"></textarea></td>
+			</tr>
+			<tr>
+				<td><label>Password</label></td>
+				<td><input type="button" id="btntoggle" value="Change Password" /></td>
+			</tr>
+			<tr>
+				<td><input type="hidden" th:field="*{password}"
+					th:value="${user.password}" id="txtpass" /></td>
+			</tr>
+		</table>
+		<div id="togglepass">
+			<table>
+				<tr>
+					<td><label>Old Password</label></td>
+					<td><input type="password" id="txtoldpass" /></td>
+				</tr>
+				<tr>
+					<td><label>New Password</label></td>
+					<td><input type="password" id="txtnewpass" /></td>
+				</tr>
+				<tr>
+					<td><label>Confirm Password</label></td>
+					<td><input type="password" id="txtcnpass" name="confirm" /></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input type="button" id="btnsave"
+						value="Save Changes" onclick="checkPasswordMatch()" /></td>
+				</tr>
+			</table>
+		</div>
+
+		<input type="submit" id="btnsubmit" value="Submit" />
+	</form>
+</body>
+
+</html>

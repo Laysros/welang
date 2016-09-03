@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<div class="row">
+	<div class="sidebar-name">
+	    <div class="col-md-3" th:each="user:${friends}">
+	        <div class="media">
+	            <a class="pull-left" href="#">
+	                <img class="media-object dp img-circle" th:src="${'/images/' + user.userSettings.profileImage}" style="width: 100px;height:100px;"/>
+	            </a>
+	            <div class="media-body">
+	                <h4 class="media-heading" th:inline="text"> [[${user.username}]] <small th:text="${user.userSettings.nativeLanguage}"></small></h4>
+	                <h5>Learning: </h5>
+		         		<div id="learning-language" th:each="lang:${user.userSettings.foreignLanguages}">
+							<h6 th:text="${lang.language}"></h6>
+						</div>
+	                <hr style="margin:1px auto; color:black;"/>
+	            </div>
+	        </div>
+	    </div>
+	 </div>
+</div>
+</html>

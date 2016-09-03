@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<head>
+	<meta charset="utf-8"></meta>
+	<meta id="_csrf" name="_csrf" th:content="${_csrf.token}" />
+	<meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}" />
+	<title>Welang ! Sign In</title>
+	<link rel="stylesheet" href="css/social-button.css" />
+	<link rel="stylesheet" href="css/css/bootstrap.min.css" />
+	<script src="css/jquery-1.11.2.min.js"></script>
+	<script src="css/js/bootstrap.min.js"></script>
+	<!-- Google Fonts -->
+	<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700|Lato:400,100,300,700,900' rel='stylesheet' type='text/css'></link>
+	<link rel="stylesheet" type="text/css" th:href="@{css/style.css}" />
+</head>
+<body>
+
+<form th:action="@{/login}" method="post" th:Object="${user}">
+	<div class="col-md-12">
+		<div class="top">
+			<h1 id="title">
+			<span id="logo">Welang <span class="tile-info" > SIGN UP for FREE !</span></span></h1>
+			<div class="main-idea">
+				<p class="teks">Start practising your foreign languages with people around the world</p>
+				<p>Chat with your friends on the various topics</p>
+				<p>Sharing culture, make new friendships</p>
+			</div>
+			<div class="center-block"><a id="fb-login" class="btn btn-block btn-social btn-facebook" href="/connect/facebook">
+        		<i	class="fa fa-facebook"></i> Sign in with Facebook
+      		</a></div>
+			<div th:if="${param.logout}" class="alert-normal">You have been logged out.</div>
+			
+		</div>
+		<div class="login-box animated fadeInUp">
+			<div class="box-header">
+				<h2>Log In</h2>
+			</div>
+			<div>
+			<div th:if="${param.error}" class="alert-danger"><font color="red">Invalid username or password.</font></div>
+				
+				<input type="text" class="style-4" name="username"
+					placeholder="User Name" required="required"/>
+					
+					
+			</div>
+			<div>
+				<input type="password" class="style-4" name="password"
+					placeholder="Password" required="required"/>					
+			</div> 
+				<button id="btn-login" type="submit">Sign In</button>
+				<button type="button" id="btn-forgot" data-toggle="modal" data-target="#myModal">Forgot?</button>
+				<br/>
+				<a href="register">Do not have an account?</a>
+			
+		</div>
+		</div>
+</form>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Reset Password</h4>
+      </div>
+      <div class="modal-body">
+	      <div style="display:none;" id="myDiv" class="animate-bottom">
+				<h3 id="result-tile">Ooop! Your email is not found in the system!!</h3>	  	
+			</div>
+        	<div class="main-login main-center">
+					<form class="form-horizontal" method="post" action="#">
+						<div class="form-group">
+							<label for="email" class="cols-sm-2 control-label">Your Email</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="glyphicon glyphicon-envelope" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="email" id="email"  placeholder="Enter your Email" required="required" />
+								</div>
+							</div>
+							<div class="cols-sm-10">
+								<small class="text-muted">To reset your password, submit your address</small>
+							</div>
+						</div>					
+						<div class="login-register">Do you have any question?
+							<b style="color:red">
+				            <a href="/contact">Contact Admin!</a></b>
+				         </div>
+					</form>
+				</div>
+				<div id="loader"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="btn-reset" class="btn btn-primary">Send Password</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+$("#btn-forgot").click(function() {
+	//document.getElementById("myDiv").style.display = "block";
+});
+$(document).on("click", "#btn-reset", function(event){
+	var email = $("#email").val();
+	var token = $('#_csrf').attr('content');
+	$("#btn-reset").attr("disabled","disabled");
+	var param = {
+			"email" : email
+		}
+		document.getElementById("loader").style.display = "block";
+		$.ajax({
+			type : "POST",
+			url : "/resetPassword?_csrf=" + token,
+			data : param, // Note it is important
+			success : function(result) {
+				  if(result == 'OK'){
+					  $("#result-tile").text("Sent Successfully!!Please check your email!");
+					  $("#result-tile").css('color', 'green');
+				  }else{
+					  $("#btn-reset").removeAttr("disabled")
+				  }
+				  $("#loader").css("display", "none");
+				  $("#myDiv").css("display", "block"); 
+				  
+			}
+		});
+	
+});
+</script>
+</body>
+</html>

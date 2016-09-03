@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<head>
+  <link rel="stylesheet" href="css/css/bootstrap.min.css"/>
+  <script src="css/js/bootstrap.min.js"></script>
+
+<link rel="stylesheet" type="text/css" th:href="@{css/app.css}" />
+<title>Spring Security Example - ProgrammingFree</title>
+ <script src="css/jquery-1.11.2.min.js"></script>
+    <script src="css/sockjs-0.3.4.min.js"></script>
+    <script src="css/stomp.min.js"></script>
+<script src="css/notification.js"></script>
+</head>
+<body class="security-app">
+	<div class="details">Welcome to Welang</div>
+	<div class="lc-block">
+		<h1>Welcome!</h1>
+		<h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
+		<a href="/findfriend" class="btn btn-primary btn-lg active"
+			role="button">Find friend</a> <a href="register"
+			class="btn btn-primary btn-lg active" role="button">Register</a> 
+			<a href="updateProfile" class="btn btn-primary btn-lg active"
+			role="button">Update profile</a>
+			
+			<a href="message" class="btn btn-primary btn-lg active"
+			role="button">Chat</a>
+			
+		<div class="alert-normal">
+			Click <a href="/hello">here</a> to see a greeting.
+		</div>
+		<a href="notification_page" class="btn btn-primary btn-lg active"
+			role="button">NItificaiton</a>
+			
+
+		<form th:action="@{/logout}" method="post">
+			<input type="submit" value="Sign Out" />
+		</form>
+		<div class="alert-normal">
+			<a href="chat_box">Chat box</a>
+		</div>
+	</div>
+	<h2>Facebook</h2>
+	<h3>
+		<!-- Hello, <span th:text="${facebookProfile.name}">Some User</span> -->
+	</h3>
+
+	<h4>Here is your feed:</h4>
+
+	<div th:each="post:${feed}">
+		<b th:text="${post.from.name}">from</b> wrote:
+		<p th:text="${post.message}">message text</p>
+		<img th:if="${post.picture}" th:src="${post.picture}" />
+		<hr />
+	</div>
+	
+</body>
+</html>

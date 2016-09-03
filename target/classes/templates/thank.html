@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<head>
+	<meta charset="utf-8"></meta>
+	<meta id="_csrf" name="_csrf" th:content="${_csrf.token}" />
+	<meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}" />
+	<title>Contact</title>
+	<link rel="stylesheet" href="css/css/bootstrap.min.css" />
+	<script src="css/jquery-1.11.2.min.js"></script>
+	<script src="css/js/bootstrap.min.js"></script>
+	<!-- Google Fonts -->
+	<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700|Lato:400,100,300,700,900' rel='stylesheet' type='text/css'></link>
+	<link rel="stylesheet" type="text/css" th:href="@{css/style.css}" />
+</head>
+<body>
+
+  <div id="w">
+    <div id="content">
+      <!-- Icons source http://dribbble.com/shots/913555-Flat-Web-Elements -->
+      <div class="notify successbox">
+        <h1>Success!</h1>
+        <span class="alerticon"><img src="http://s22.postimg.org/i5iji9hv1/check.png" alt="checkmark" /></span>
+        <p>Thanks so much for your message. We check e-mail frequently and will try our best to respond to your inquiry.</p>
+      </div>
+      
+    </div><!-- @end #content -->
+  </div><!-- @end #w -->
+<div class="login-register">Go to
+           <a href="/">Login page</a>
+        </div>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+M. Bernard : Bonjour, j’ai réservé un véhicule au nom de Bernard.
+
+l’employée : Bernard Claude. Oui, vous avez votre permis de conduire ? 
+
+M. Bernard : Voilà.
+
+l’employée : On n’a plus de véhicule en catégorie B. Je vais vous surclasser.
+
+M. Bernard : Qu’est-ce que j’aurai à la place ?
+
+l’employée : Une Opel Astra.
+
+M. Bernard : C’est un modèle diésel ? 
+
+l’employée : Non, essence. 
+
+M. Bernard : Justement, je voulais un diesel. 
+
+l’employée : Désolé, on n’a plus que des essences.
+
+l’employée : Ce sera à partir du premier août, et vous rendrez le véhicule le 20 août, ici même…
+
+M. Bernard : Oui, c’est bien ça.
+
+l’employée : Alors, je vais vous demander votre carte de crédit.
+
+M. Bernard : Tenez.
+
+l’employée : Merci, tapez votre code, s’il vous plaît.
+
+l’employée : Vous pouvez recommencer, ça ne passe pas.
+
+l’employée : C’est bon. 
+
+l’employée : Alors, voilà la clé, les papiers. Il y a une petite rayure sur la porte conducteur. Vous pouvez signer ici, s’il vous plaît ? 
+
+l’employée : Votre véhicule est stationné sur le parking rouge.
+
+M. Bernard : Merci. 
+
+l’employée : Au revoir, bon séjour.

@@ -1,0 +1,19 @@
+A:Bonjour, je peux vous aider ?
+B:Oui, je suis à la recherche d’un appartement à louer.
+A:D’accord, vous avez une préférence pour un endroit particulier ?
+B:Si possible, je voudrais être dans le quartier de la gare…
+A:Dans le quartier de la gare, oui… quel type d’appartement vous recherchez ?
+B:En fait ça dépendra du prix, je ne voudrais pas dépasser 500 euros par mois.
+A:Dans le quartier de la gare pour 500 euros, vous ne trouverez que des studios.
+B:Ah ? même pas un deux pièces ?
+A:Non, malheureusement. Comptez 700 euros minimum pour un deux pièces ou bien il faut s’éloigner un peu… Attendez, j’ai peut-êre quelque chose pour vous… Ah voilà, j’ai un grand studio, 38 mètres carrés avec un balcon.
+B:Est-ce qu’il est lumineux ?
+A:Oui, c’est un studio agréable qui donne sur une cour intérieure. Il est au cinquième étage.
+B:Au cinquième ? Il y a un ascenseur ?
+A:Non, l’immeuble est ancien.
+B:Ah, et le loyer est à combien ?
+A:450 euros + 150 euros de charges.
+B:Ça fait 600 euros…
+A:Oui, ça dépasse un peu votre budget mais le chauffage est compris. Vous voulez quand même le visiter ?
+B:Oui, ça ne coûte rien d’aller voir.
+A:Vous ne le regretterez pas.

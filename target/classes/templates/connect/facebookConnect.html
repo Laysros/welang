@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+	<head>
+		<title>Facebook</title>
+	</head>
+	<body>
+		
+		<form action="/connect/facebook" method="POST" id="form">
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+		</form>
+	</body>
+	<script type="text/javascript">
+    document.getElementById('form').submit(); // SUBMIT FORM
+</script>
+</html>

@@ -1,0 +1,23 @@
+Student A: Bonjour, ça va? Comment tu t’appelles?
+
+Student B: Oh, ça va. Je m’appelle Peter. Et toi?
+
+Student A: Moi, c’est André. Tu es australien?
+
+Student B: Non, je suis néo-zélandais. Et toi? Tu es français?
+
+Student A: Non, je suis tahitien. Tu as quel âge?
+
+Student B: J’ai douze ans. Et toi?
+
+Student A: Moi aussi. Aujourd’hui je fais une fête pour mon anniversaire.
+
+Student B: Alors, bon anniversaire.
+
+Student A: Merci. Tu as un bout de papier s’il te plaît?
+
+Student B: Oui – tiens, voilà.
+
+Student A: Merci, voici mon numéro de téléphone. Tu es invité à mon anniversaire.
+
+Student B: Super. Merci.
